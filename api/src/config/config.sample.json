@@ -1,0 +1,31 @@
+{
+  "tiers": [
+    {
+      "id": "free",
+      "name": "Free",
+      "price": 0,
+      "limit": 7,
+      "features": ["Will", "it", "work"],
+      "popular": false,
+      "stripePriceId": null
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "price": 29,
+      "limit": 11,
+      "features": ["Fingers", "Crossed"],
+      "popular": true,
+      "stripePriceId": "price_INJECTED_BY_GITHUB_ACTION"
+    },
+    {
+      "id": "developer",
+      "name": "Developer",
+      "price": 50,
+      "limit": "unlimited",
+      "features": ["hope", "it", "works"],
+      "popular": false,
+      "stripePriceId": "price_INJECTED_BY_GITHUB_ACTION"
+    }
+  ]
+}

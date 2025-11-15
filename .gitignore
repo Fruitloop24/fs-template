@@ -1,0 +1,70 @@
+# Environment variables (CRITICAL - DO NOT COMMIT)
+.env
+.env.local
+.env*.local
+.dev.vars
+*.env
+
+# API keys and secrets
+**/*secret*
+**/*key*
+!**/package-lock.json
+!**/tsconfig.json
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.log
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Wrangler
+.wrangler/
+.mf/
+wrangler.toml.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+.history/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+/tmp/
+*.pid
+*.seed
+*.pid.lock
+
+# Production
+.vercel
+.cloudflare
+.env.production
+

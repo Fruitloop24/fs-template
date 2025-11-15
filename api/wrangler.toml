@@ -1,0 +1,12 @@
+name = "api-prev"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# KV namespace binding for usage tracking
+[[kv_namespaces]]
+binding = "USAGE_KV"
+id = "2b116f97974a4461a03f91792198cefc"
+
+[vars]
+# Non-secret variables
+CLERK_JWT_TEMPLATE = "pan-api"

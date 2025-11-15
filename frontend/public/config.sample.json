@@ -1,0 +1,44 @@
+{
+  "branding": {
+    "appName": "We might make it work",
+    "logoUrl": "https://panstorage.blob.core.windows.net/images-website/voip-solutions-hero.jpg",
+    "primaryColor": "#FFD700",
+    "valueProp": "i am going to be impressed",
+    "description": "Claude read this to me when i ask you to check .. lol",
+    "heroImageUrl": "https://panstorage.blob.core.windows.net/images-website/hero-logo.png"
+  },
+  "product": {
+    "name": "i love claude  code "
+  },
+  "tiers": [
+    {
+      "id": "free",
+      "name": "Free",
+      "price": 0,
+      "limit": 7,
+      "features": ["Will", "it", "work"],
+      "popular": false,
+      "stripePriceId": null
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "price": 29,
+      "limit": 11,
+      "features": ["Fingers", "Crossed"],
+      "popular": true,
+      "stripePriceId": "price_INJECTED_BY_GITHUB_ACTION"
+    },
+    {
+      "id": "developer",
+      "name": "Developer",
+      "price": 50,
+      "limit": "unlimited",
+      "features": ["hope", "it", "works"],
+      "popular": false,
+      "stripePriceId": "price_INJECTED_BY_GITHUB_ACTION"
+    }
+  ],
+  "apiUrl": "http://localhost:8787",
+  "clerkPublishableKey": "pk_test_ZXZpZGVudC1zd2luZS00LmNsZXJrLmFjY291bnRzLmRldiQ"
+}
