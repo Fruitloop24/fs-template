@@ -9,7 +9,7 @@
  */
 
 import { Env } from '../types';
-import { PRICE_ID_MAP } from '../config/tiers';
+import { getPriceIdMap } from '../config/configLoader';
 
 /**
  * Handle /api/create-checkout - Create Stripe Checkout session
@@ -48,15 +48,17 @@ export async function handleCreateCheckout(
 			return {};
 		}) as { tier?: string };
 
+		// Load price IDs from config
+		const priceIdMap = await getPriceIdMap(env);
+
 		// Default to first available paid tier (dynamic!)
-		const firstPaidTier = Object.keys(PRICE_ID_MAP)[0];
+		const firstPaidTier = Object.keys(priceIdMap).find(key => key !== 'free') || 'pro';
 		const targetTier = body.tier || firstPaidTier;
 
 		console.log(`🎯 Checkout requested for tier: ${targetTier}`);
 
 		// Get the price ID for target tier
-		const getPriceId = PRICE_ID_MAP[targetTier];
-		const priceId = getPriceId ? getPriceId(env) : '';
+		const priceId = priceIdMap[targetTier] || '';
 
 		console.log(`💳 Price ID for ${targetTier}: ${priceId}`);
 
