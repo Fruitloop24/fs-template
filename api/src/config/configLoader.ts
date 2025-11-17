@@ -74,48 +74,10 @@ interface Config {
  * @returns {Promise<Config>} Configuration object
  */
 async function loadConfig(): Promise<Config> {
-  try {
-    // Dynamic import of config.json
-    // GitHub Action writes this file before deploying
-    const config = await import('./config.json');
-    return config.default || config;
-  } catch (error) {
-    console.error('Failed to load config.json:', error);
-
-    // Fallback to default config for development
-    // This allows local testing without config.json
-    return {
-      tiers: [
-        {
-          id: 'free',
-          name: 'Free',
-          price: 0,
-          limit: 6,
-          features: ['API access', 'Community support'],
-          popular: false,
-          stripePriceId: null,
-        },
-        {
-          id: 'pro',
-          name: 'Pro',
-          price: 29,
-          limit: 10,
-          features: ['Everything in Free', 'Priority support'],
-          popular: true,
-          stripePriceId: null, // Will use env var for local dev
-        },
-        {
-          id: 'developer',
-          name: 'Developer',
-          price: 50,
-          limit: 'unlimited',
-          features: ['Everything in Pro', 'Unlimited requests'],
-          popular: false,
-          stripePriceId: null, // Will use env var for local dev
-        },
-      ],
-    };
-  }
+  // Import config.ts (TypeScript module written by GitHub Action)
+  // Wrangler automatically bundles all TypeScript imports
+  const configModule = await import('./config');
+  return configModule.config;
 }
 
 /**
