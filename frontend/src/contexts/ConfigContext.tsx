@@ -3,7 +3,7 @@
  * Loads config from /config.json (injected by GitHub Action)
  */
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 interface Tier {
   name: string;
