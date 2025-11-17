@@ -47,7 +47,6 @@ export default function Landing() {
   const { config, loading: configLoading } = useConfig();
 
   const plan = (user?.publicMetadata?.plan as string) || 'free';
-  const API_URL = config?.apiUrl || import.meta.env.VITE_API_URL || 'http://localhost:8787';
 
   // Extract branding for easy access
   const appName = config?.branding?.appName || 'YourApp';
