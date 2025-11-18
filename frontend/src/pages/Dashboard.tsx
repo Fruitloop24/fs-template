@@ -22,7 +22,7 @@
  * ============================================================================
  */
 
-import { useAuth, useUser } from '@clerk/clerk-react';
+import { useAuth, useUser, UserButton } from '@clerk/clerk-react';
 import { useEffect, useState, useCallback } from 'react'; // Added useCallback
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useConfig } from '../contexts/ConfigContext';
