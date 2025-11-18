@@ -22,8 +22,8 @@
  * ============================================================================
  */
 
-import { useAuth, useUser, UserButton } from '@clerk/clerk-react';
-import { useEffect, useState } from 'react';
+import { useAuth, useUser } from '@clerk/clerk-react';
+import { useEffect, useState, useCallback } from 'react'; // Added useCallback
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useConfig } from '../contexts/ConfigContext';
 
@@ -37,7 +37,7 @@ interface UsageData {
 
 interface ApiResponse {
   success: boolean;
-  data?: any;
+  data?: { message?: string }; // Changed 'any' to a more specific type
   usage?: { count: number; limit: number | string; plan: string };
   error?: string;
   message?: string;
@@ -65,7 +65,7 @@ export default function Dashboard() {
   const primaryColor = config?.branding?.primaryColor || '#0f172a';
   const description = config?.branding?.description || 'Your product description goes here';
 
-  const fetchUsage = async (forceRefresh = false) => {
+  const fetchUsage = useCallback(async (forceRefresh = false) => { // Wrapped in useCallback
     try {
       const token = await getToken({ template: 'pan-api', ...(forceRefresh && { skipCache: true }) });
       const response = await fetch(`${API_URL}/api/usage`, {
@@ -76,7 +76,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Failed to fetch usage:', error);
     }
-  };
+  }, [getToken, API_URL]); // Dependencies for useCallback
 
   const makeRequest = async () => {
     setLoading(true);
@@ -130,7 +130,8 @@ export default function Dashboard() {
           await getToken({ template: 'pan-api', skipCache: true });
           await new Promise(r => setTimeout(r, 500));
           window.location.href = '/dashboard';
-        } catch (error) {
+        } catch (error) { // Log the error to make it "used"
+          console.error("Error during refresh after upgrade:", error);
           window.location.href = '/dashboard';
         }
       };
@@ -139,9 +140,13 @@ export default function Dashboard() {
     } else if (isLoaded && user) {
       fetchUsage();
     }
-  }, [isLoaded, user, searchParams, getToken]);
+  }, [isLoaded, user, searchParams, getToken, fetchUsage]); // Added fetchUsage to dependencies
 
   const plan = (user?.publicMetadata?.plan as string) || 'free';
+
+  // Derive the limit from config.json based on the current plan
+  const currentTier = config?.tiers.find(t => t.name.toLowerCase() === plan.toLowerCase());
+  const derivedLimit = currentTier?.limit || usage?.limit || 'unlimited';
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -183,13 +188,13 @@ export default function Dashboard() {
               <div className="mb-4">
                 <div className="text-3xl font-bold text-slate-900 mb-1">
                   {usage.usageCount}
-                  {usage.limit !== 'unlimited' && <span className="text-lg text-slate-400"> / {usage.limit}</span>}
+                  {derivedLimit !== 'unlimited' && <span className="text-lg text-slate-400"> / {derivedLimit}</span>}
                 </div>
                 <p className="text-slate-600 text-sm">requests</p>
               </div>
               <div className="p-3 bg-slate-100 rounded-lg border border-slate-200">
                 <p className="m-0 text-slate-700 text-sm font-medium">
-                  {usage.limit === 'unlimited' ? 'Unlimited' : `${usage.remaining} remaining`}
+                  {derivedLimit === 'unlimited' ? 'Unlimited' : `${usage.remaining} remaining`}
                 </p>
               </div>
               <div className="mt-6 pt-6 border-t border-gray-200">

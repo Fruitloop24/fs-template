@@ -26,6 +26,7 @@ import { SignedIn, SignedOut, useUser, UserButton } from '@clerk/clerk-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useConfig } from '../contexts/ConfigContext';
+import type { Tier as ConfigTier } from '../contexts/config-context.types'; // Type-only import
 
 interface Tier {
   id: string;
@@ -33,6 +34,7 @@ interface Tier {
   price: number;
   limit: number | 'unlimited';
   hasPriceId: boolean;
+  features: string[]; // Added features to local Tier interface
 }
 
 export default function Landing() {
@@ -57,12 +59,13 @@ export default function Landing() {
   useEffect(() => {
     // Use tiers from config.json (already has user's configured tiers)
     if (config?.tiers) {
-      const tiersData = config.tiers.map((tier: any) => ({
+      const tiersData = config.tiers.map((tier: ConfigTier) => ({
         id: tier.name,
         name: tier.displayName,
         price: tier.price,
-        limit: tier.limit === null ? 'unlimited' : tier.limit,
+        limit: (tier.limit === null || tier.limit === undefined) ? 'unlimited' : tier.limit as number | 'unlimited',
         hasPriceId: !!tier.stripePriceId,
+        features: Array.isArray(tier.features) ? tier.features : [], // Features already an array from GitHub Action
       }));
       setTiers(tiersData);
     }
@@ -221,18 +224,12 @@ export default function Landing() {
 
               {/* Features List */}
               <ul className="mt-8 space-y-3">
-                <li className="flex items-start text-slate-600">
-                  <span className="mr-2">✓</span>
-                  <span>Feature one description</span>
-                </li>
-                <li className="flex items-start text-slate-600">
-                  <span className="mr-2">✓</span>
-                  <span>Feature two description</span>
-                </li>
-                <li className="flex items-start text-slate-600">
-                  <span className="mr-2">✓</span>
-                  <span>Feature three description</span>
-                </li>
+                {tier.features?.map((feature: string, index: number) => (
+                  <li key={index} className="flex items-start text-slate-600">
+                    <span className="mr-2">✓</span>
+                    <span>{feature}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           ))}

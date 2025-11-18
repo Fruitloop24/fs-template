@@ -23,6 +23,7 @@ import { useEffect, useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useConfig } from '../contexts/ConfigContext';
+import { Tier as ConfigTier } from '../contexts/config-context.types'; // Import Tier from types file
 
 interface Tier {
   id: string;
@@ -31,6 +32,7 @@ interface Tier {
   limit: number | 'unlimited';
   features: string[];
   hasPriceId: boolean;
+  stripePriceId: string | null; // Added stripePriceId to local Tier interface
 }
 
 export default function ChoosePlanPage() {
@@ -52,16 +54,16 @@ export default function ChoosePlanPage() {
   // Load tiers from config.json (has price IDs baked in!)
   useEffect(() => {
     if (config?.tiers) {
-      const tiersData = config.tiers.map((tier: any) => ({
+      const tiersData = config.tiers.map((tier: ConfigTier) => ({
         id: tier.name,
         name: tier.displayName,
         price: tier.price,
         limit: tier.limit === null ? 'unlimited' : tier.limit,
-        features: tier.features || [],
+        features: tier.features ? tier.features.split(',').map(f => f.trim()) : [], // Ensure features is an array of strings
         hasPriceId: !!tier.stripePriceId,
-        stripePriceId: tier.stripePriceId, // Keep for checkout!
+        stripePriceId: tier.stripePriceId,
       }));
-      setTiers(tiersData as any);
+      setTiers(tiersData);
       setLoading(false);
     }
   }, [config]);
@@ -81,7 +83,7 @@ export default function ChoosePlanPage() {
     try {
       // Find the tier to get its priceId
       const selectedTier = tiers.find(t => t.id === tierId);
-      const priceId = (selectedTier as any)?.stripePriceId;
+      const priceId = selectedTier?.stripePriceId;
 
       const token = await getToken({ template: 'pan-api' });
       const response = await fetch(`${API_URL}/api/create-checkout`, {

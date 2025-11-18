@@ -4,43 +4,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-
-interface Tier {
-  name: string;
-  displayName: string;
-  price: number;
-  limit: number | null;
-  features: string;
-  popular: boolean;
-  stripePriceId: string | null;
-}
-
-interface Branding {
-  appName: string;
-  logoUrl: string;
-  primaryColor: string;
-  valueProp: string;
-  description: string;
-  heroImageUrl: string;
-}
-
-interface Product {
-  name: string;
-}
-
-interface Config {
-  branding: Branding;
-  product: Product;
-  tiers: Tier[];
-  apiUrl: string;
-  clerkPublishableKey: string;
-}
-
-interface ConfigContextType {
-  config: Config | null;
-  loading: boolean;
-  error: string | null;
-}
+import { Config, ConfigContextType } from './config-context.types';
 
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
