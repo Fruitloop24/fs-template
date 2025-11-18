@@ -28,6 +28,7 @@ export interface Config {
   tiers: Tier[];
   apiUrl: string;
   clerkPublishableKey: string;
+  platformUserId?: string; // Platform user ID (for preview testing)
 }
 
 export interface ConfigContextType {

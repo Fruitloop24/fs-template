@@ -67,25 +67,46 @@ export default function Dashboard() {
 
   const fetchUsage = useCallback(async (forceRefresh = false) => { // Wrapped in useCallback
     try {
-      const token = await getToken({ template: 'pan-api', ...(forceRefresh && { skipCache: true }) });
+      const headers: Record<string, string> = {};
+
+      // Use platform user ID for preview mode (no auth required)
+      if (config?.platformUserId) {
+        headers['X-Platform-User-Id'] = config.platformUserId;
+        console.log('[Dashboard] Preview mode - using platformUserId:', config.platformUserId);
+      } else {
+        // Production mode - use Clerk JWT
+        const token = await getToken({ template: 'pan-api', ...(forceRefresh && { skipCache: true }) });
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_URL}/api/usage`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
       });
       const data = await response.json();
       setUsage(data);
     } catch (error) {
       console.error('Failed to fetch usage:', error);
     }
-  }, [getToken, API_URL]); // Dependencies for useCallback
+  }, [getToken, API_URL, config]); // Added config to dependencies
 
   const makeRequest = async () => {
     setLoading(true);
     setMessage('');
     try {
-      const token = await getToken({ template: 'pan-api' });
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+      // Use platform user ID for preview mode
+      if (config?.platformUserId) {
+        headers['X-Platform-User-Id'] = config.platformUserId;
+      } else {
+        // Production mode - use Clerk JWT
+        const token = await getToken({ template: 'pan-api' });
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_URL}/api/data`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        headers,
       });
       const data: ApiResponse = await response.json();
 
