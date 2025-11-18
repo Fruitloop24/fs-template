@@ -48,22 +48,21 @@ export default function ChoosePlanPage() {
   const API_URL = config?.apiUrl || import.meta.env.VITE_API_URL || 'http://localhost:8787';
   const currentPlan = (user?.publicMetadata?.plan as string) || 'free';
 
-  // Fetch available tiers from backend
+  // Load tiers from config.json (has price IDs baked in!)
   useEffect(() => {
-    const fetchTiers = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/tiers`);
-        const data = await response.json();
-        setTiers(data.tiers);
-      } catch (err) {
-        console.error('Failed to fetch tiers:', err);
-        setError('Failed to load pricing options');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTiers();
-  }, [API_URL]);
+    if (config?.tiers) {
+      const tiersData = config.tiers.map((tier: any) => ({
+        id: tier.name,
+        name: tier.displayName,
+        price: tier.price,
+        limit: tier.limit === null ? 'unlimited' : tier.limit,
+        hasPriceId: !!tier.stripePriceId,
+        stripePriceId: tier.stripePriceId, // Keep for checkout!
+      }));
+      setTiers(tiersData as any);
+      setLoading(false);
+    }
+  }, [config]);
 
   /**
    * handleSelectPlan: Initiates upgrade/downgrade
@@ -78,6 +77,10 @@ export default function ChoosePlanPage() {
 
     setUpgrading(tierId);
     try {
+      // Find the tier to get its priceId
+      const selectedTier = tiers.find(t => t.id === tierId);
+      const priceId = (selectedTier as any)?.stripePriceId;
+
       const token = await getToken({ template: 'pan-api' });
       const response = await fetch(`${API_URL}/api/create-checkout`, {
         method: 'POST',
@@ -85,7 +88,7 @@ export default function ChoosePlanPage() {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ tier: tierId }),
+        body: JSON.stringify({ tier: tierId, priceId }),
       });
 
       const data = await response.json();
