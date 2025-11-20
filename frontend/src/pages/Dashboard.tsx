@@ -69,15 +69,9 @@ export default function Dashboard() {
     try {
       const headers: Record<string, string> = {};
 
-      // Use platform user ID for preview mode (no auth required)
-      if (config?.platformUserId) {
-        headers['X-Platform-User-Id'] = config.platformUserId;
-        console.log('[Dashboard] Preview mode - using platformUserId:', config.platformUserId);
-      } else {
-        // Production mode - use Clerk JWT
-        const token = await getToken({ template: 'pan-api', ...(forceRefresh && { skipCache: true }) });
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      // Use Clerk JWT authentication
+      const token = await getToken({ template: 'pan-api', ...(forceRefresh && { skipCache: true }) });
+      headers['Authorization'] = `Bearer ${token}`;
 
       const response = await fetch(`${API_URL}/api/usage`, {
         headers,
@@ -95,14 +89,9 @@ export default function Dashboard() {
     try {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
 
-      // Use platform user ID for preview mode
-      if (config?.platformUserId) {
-        headers['X-Platform-User-Id'] = config.platformUserId;
-      } else {
-        // Production mode - use Clerk JWT
-        const token = await getToken({ template: 'pan-api' });
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      // Use Clerk JWT authentication
+      const token = await getToken({ template: 'pan-api' });
+      headers['Authorization'] = `Bearer ${token}`;
 
       const response = await fetch(`${API_URL}/api/data`, {
         method: 'POST',
