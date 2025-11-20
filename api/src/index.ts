@@ -201,7 +201,17 @@ export default {
 			 * - User gets new JWT on next sign-in/token refresh
 			 * - New JWT includes updated plan automatically
 			 */
-			const plan = ((auth.sessionClaims as any)?.plan as PlanTier) || 'free';
+			let plan = (auth.sessionClaims as any)?.plan;
+
+			// If no plan in JWT, default to first tier (free tier - price=0)
+			if (!plan) {
+				const { getAllTiers } = await import('./config/configLoader');
+				const allTiers = await getAllTiers();
+				const freeTier = allTiers.find(t => t.price === 0) || allTiers[0];
+				plan = (freeTier?.id || freeTier?.name) as PlanTier;
+				console.log(`ℹ️  No plan in JWT, defaulting to: ${plan}`);
+			}
+
 			console.log(`✅ User ${userId} authenticated with plan: ${plan} (from JWT)`);
 
 			// ====================================================================
