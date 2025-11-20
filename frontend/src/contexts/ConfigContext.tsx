@@ -4,7 +4,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { Config, ConfigContextType } from './config-context.types';
+import type { Config, ConfigContextType } from './config-context.types';
 
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 

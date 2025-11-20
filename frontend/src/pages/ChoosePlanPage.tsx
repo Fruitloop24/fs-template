@@ -23,7 +23,7 @@ import { useEffect, useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useConfig } from '../contexts/ConfigContext';
-import { Tier as ConfigTier } from '../contexts/config-context.types'; // Import Tier from types file
+import type { Tier as ConfigTier } from '../contexts/config-context.types'; // Import Tier from types file
 
 interface Tier {
   id: string;
@@ -59,7 +59,7 @@ export default function ChoosePlanPage() {
         name: tier.displayName,
         price: tier.price,
         limit: tier.limit === null ? 'unlimited' : tier.limit,
-        features: tier.features ? tier.features.split(',').map(f => f.trim()) : [], // Ensure features is an array of strings
+        features: Array.isArray(tier.features) ? tier.features : (typeof tier.features === 'string' ? tier.features.split(',').map((f: string) => f.trim()) : []), // Ensure features is an array of strings
         hasPriceId: !!tier.stripePriceId,
         stripePriceId: tier.stripePriceId,
       }));

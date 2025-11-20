@@ -3,8 +3,8 @@ export interface Tier {
   name: string;
   displayName: string;
   price: number;
-  limit: number | null;
-  features: string[]; // Array of feature strings (converted by GitHub Action)
+  limit: number | 'unlimited' | null;
+  features: string | string[]; // Can be string (comma-separated) or array
   popular: boolean;
   stripePriceId: string | null;
 }
