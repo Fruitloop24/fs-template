@@ -69,6 +69,11 @@ export default function Dashboard() {
     try {
       const headers: Record<string, string> = {};
 
+      // Send platform user ID for multi-tenant config lookup
+      if (config?.userId) {
+        headers['X-Platform-User-Id'] = config.userId;
+      }
+
       // Use Clerk JWT authentication
       const token = await getToken({ template: 'pan-api', ...(forceRefresh && { skipCache: true }) });
       headers['Authorization'] = `Bearer ${token}`;
@@ -88,6 +93,11 @@ export default function Dashboard() {
     setMessage('');
     try {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+      // Send platform user ID for multi-tenant config lookup
+      if (config?.userId) {
+        headers['X-Platform-User-Id'] = config.userId;
+      }
 
       // Use Clerk JWT authentication
       const token = await getToken({ template: 'pan-api' });
@@ -117,10 +127,19 @@ export default function Dashboard() {
 
   const handleManageBilling = async () => {
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+      // Send platform user ID for multi-tenant config lookup
+      if (config?.userId) {
+        headers['X-Platform-User-Id'] = config.userId;
+      }
+
       const token = await getToken({ template: 'pan-api' });
+      headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch(`${API_URL}/api/customer-portal`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        headers,
       });
       const data = await response.json();
       if (response.ok && data.url) window.location.href = data.url;

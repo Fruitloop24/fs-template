@@ -85,13 +85,19 @@ export default function ChoosePlanPage() {
       const selectedTier = tiers.find(t => t.id === tierId);
       const priceId = selectedTier?.stripePriceId;
 
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+      // Send platform user ID for multi-tenant config lookup
+      if (config?.userId) {
+        headers['X-Platform-User-Id'] = config.userId;
+      }
+
       const token = await getToken({ template: 'pan-api' });
+      headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch(`${API_URL}/api/create-checkout`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ tier: tierId, priceId }),
       });
 

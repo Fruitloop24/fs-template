@@ -25,6 +25,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useConfig } from '../contexts/ConfigContext';
 
 export default function CheckoutPage() {
   const { getToken, isLoaded: authLoaded } = useAuth();
@@ -32,6 +33,7 @@ export default function CheckoutPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const { config } = useConfig();
 
   useEffect(() => {
     const initiateCheckout = async () => {
@@ -57,14 +59,20 @@ export default function CheckoutPage() {
 
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
+
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+        // Send platform user ID for multi-tenant config lookup
+        if (config?.userId) {
+          headers['X-Platform-User-Id'] = config.userId;
+        }
+
         const token = await getToken({ template: 'pan-api' });
+        headers['Authorization'] = `Bearer ${token}`;
 
         const response = await fetch(`${API_URL}/api/create-checkout`, {
           method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
+          headers,
           body: JSON.stringify({ tier: plan }),
         });
 

@@ -28,6 +28,7 @@ export interface Config {
   tiers: Tier[];
   apiUrl: string;
   clerkPublishableKey: string;
+  userId: string;
 }
 
 export interface ConfigContextType {
