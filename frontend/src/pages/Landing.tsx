@@ -52,6 +52,8 @@ export default function Landing() {
 
   // Extract branding for easy access
   const appName = config?.branding?.appName || 'YourApp';
+  const logoUrl = config?.branding?.logoUrl || '';
+  const heroImageUrl = config?.branding?.heroImageUrl || '';
   const primaryColor = config?.branding?.primaryColor || '#0f172a';
   const valueProp = config?.branding?.valueProp || 'Your Product Headline';
   const description = config?.branding?.description || 'Describe what your product does in one compelling sentence.';
@@ -96,12 +98,15 @@ export default function Landing() {
     <div className="min-h-screen bg-white">
       {/* ================================================================
           NAVIGATION
-          App name comes from config.branding.appName
+          Logo and app name from config.branding
           Primary color applied to buttons via inline styles
           ================================================================ */}
       <nav className="border-b border-gray-200 px-8 py-4 flex justify-between items-center">
-        <Link to="/" className="text-slate-900 text-2xl font-bold no-underline hover:text-slate-700">
-          {appName}
+        <Link to="/" className="flex items-center gap-3 no-underline hover:opacity-80 transition-opacity">
+          {logoUrl && (
+            <img src={logoUrl} alt={`${appName} logo`} className="h-10 w-auto" />
+          )}
+          <span className="text-slate-900 text-2xl font-bold">{appName}</span>
         </Link>
         <div className="flex gap-8 items-center">
           {/* Menu Links - Add/remove as needed */}
@@ -147,35 +152,90 @@ export default function Landing() {
       {/* ================================================================
           HERO SECTION
           Headline and description from config.branding
+          Hero image displayed if provided
           Primary color applied to CTA buttons
           ================================================================ */}
-      <div className="max-w-5xl mx-auto px-8 py-24 text-center">
-        <h1 className="text-6xl font-bold text-slate-900 mb-6 leading-tight">
-          {valueProp}
-        </h1>
-        <p className="text-2xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-          {description}
-        </p>
-        <SignedOut>
-          <Link
-            to="/sign-up"
-            className="inline-block px-12 py-4 text-white no-underline rounded-lg font-bold text-lg transition-opacity hover:opacity-90"
-            style={{ backgroundColor: primaryColor }}
-          >
-            Start Free Trial
-          </Link>
-        </SignedOut>
-        <SignedIn>
-          <Link
-            to="/dashboard"
-            className="inline-block px-12 py-4 text-white no-underline rounded-lg font-bold text-lg transition-opacity hover:opacity-90"
-            style={{ backgroundColor: primaryColor }}
-          >
-            Go to Dashboard
-          </Link>
-        </SignedIn>
-        <p className="mt-6 text-slate-500 text-sm">No credit card required • Free tier available</p>
+      <div className="max-w-7xl mx-auto px-8 py-24">
+        <div className={`grid ${heroImageUrl ? 'md:grid-cols-2' : 'grid-cols-1'} gap-12 items-center`}>
+          {/* Hero Text */}
+          <div className={heroImageUrl ? 'text-left' : 'text-center mx-auto max-w-5xl'}>
+            <h1 className="text-6xl font-bold text-slate-900 mb-6 leading-tight">
+              {valueProp}
+            </h1>
+            <p className="text-2xl text-slate-600 mb-12 leading-relaxed">
+              {description}
+            </p>
+            <div className="flex gap-4 items-center">
+              <SignedOut>
+                <Link
+                  to="/sign-up"
+                  className="inline-block px-12 py-4 text-white no-underline rounded-lg font-bold text-lg transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  Start Free Trial
+                </Link>
+              </SignedOut>
+              <SignedIn>
+                <Link
+                  to="/dashboard"
+                  className="inline-block px-12 py-4 text-white no-underline rounded-lg font-bold text-lg transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  Go to Dashboard
+                </Link>
+              </SignedIn>
+            </div>
+            <p className="mt-6 text-slate-500 text-sm">No credit card required • Free tier available</p>
+          </div>
+
+          {/* Hero Image */}
+          {heroImageUrl && (
+            <div className="relative">
+              <img
+                src={heroImageUrl}
+                alt="Product hero"
+                className="w-full h-auto rounded-2xl shadow-2xl"
+              />
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* ================================================================
+          FEATURES SECTION
+          Shows the top features from the tiers
+          Automatically pulls from tier features for visual display
+          ================================================================ */}
+      {tiers.length > 0 && (
+        <div id="features" className="max-w-7xl mx-auto px-8 py-24">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-slate-900 mb-4">Everything You Need</h2>
+            <p className="text-xl text-slate-600">Powerful features to help you succeed</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Feature cards generated from tier features */}
+            {tiers
+              .flatMap(tier => tier.features || [])
+              .filter((feature, index, self) => feature && self.indexOf(feature) === index)
+              .slice(0, 6)
+              .map((feature, index) => (
+                <div key={index} className="bg-white p-8 rounded-xl border-2 border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-white text-2xl font-bold"
+                    style={{ backgroundColor: primaryColor }}
+                  >
+                    ✓
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">{feature}</h3>
+                  <p className="text-slate-600">
+                    Get access to {feature.toLowerCase()} and more with our platform.
+                  </p>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
 
       {/* ================================================================
           PRICING SECTION
